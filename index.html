@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
+    <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <style>
+    body {
+      margin: 0;
+      background: #111;
+      min-width: 960px;
+    }
+
+    .container {
+        text-align: center;
+        color: white;
+    }
+
+    p{
+        display: table;
+    }
+
+    #EL{
+        background: hsl(119, 100%, 50%);
+    }
+    #VV{
+        background: hsl(359, 100%, 50%);
+    }
+    #KV{
+        background: hsl(239, 100%, 50%);
+    }
+    #BL{
+        background: hsl(239, 100%, 100%);
+    }
+
+    </style>
+    <script type="text/javascript">
+            var EL, KV, VV, length;
+            var apartment = "30-1001", rate = "short";
+            var isPaused = false;
+            function loadFiles(apartment, rate){
+                i=0;
+                $.getJSON("json/"+apartment+"-EL-"+rate+".json", function(data){
+                    EL = data;
+                    length = EL.length;
+                });
+                $.getJSON("json/"+apartment+"-KV-"+rate+".json", function(data){
+                    KV = data;
+                });
+                $.getJSON("json/"+apartment+"-VV-"+rate+".json", function(data){
+                    VV = data;
+                });
+            isPaused = false;
+            }
+            loadFiles(apartment, rate);
+
+    </script>
+</head>
+    <body>
+        <div class="container">
+        <div class="col-sm-2 form-group">
+            <label for="ap" class="label-control">Observing:</label>
+            <select name="ap" id="ap" class="form-control">
+                <option value="30-1001">Apartment 30-1001</option>
+                <option value="30-1002">Apartment 30-1002</option>
+            </select>
+        </div>
+        <div class="col-sm-2 form-group">
+            <label for="rate" class="label-control">Rate:</label>
+            <select name="rate" id="rate" class="form-control">
+                <option value="short">Hourly</option>
+                <option value="dygn">Daily</option>
+            </select>
+        </div>
+        <div class="col-sm-8" id="canvas">
+
+        <script>
+
+        var width = 600;
+        height = 600;
+        var duration = 4000;
+        var interval = 1000;
+        // var clearInterval = 20000;
+        var pieAngle = 2*Math.PI/3;
+
+        var x1 = width / 2,
+        y1 = height / 2,
+        x0 = x1,
+        y0 = y1,
+        i = 0,
+        r = 300,
+        τ = 2*Math.PI/3;
+
+        var canvas = d3.select("#canvas").append("canvas")
+        .attr("width", width)
+        .attr("height", height)
+        .on("ontouchstart" in document ? "touchmove" : "mousemove", move);
+
+        var context = canvas.node().getContext("2d");
+        context.globalCompositeOperation = "lighter";
+        context.lineWidth = 1;
+        // context.globalAlpha = 0.01;
+
+        setInterval(function(){
+            if(!isPaused){
+            context.clearRect(0, 0, width, height);
+            if(i < length) i++;
+            else i = 0;
+            $("#date").html("Date: " + EL[i]["Date"]);
+        }
+        }, interval)
+
+        // EL
+        setInterval(function(){
+            if(!isPaused){
+        d3.timer(function() {
+          var color = parseFloat(EL[i]["energy"]) || 0;
+          console.log("EL:" + color);
+          var z = d3.hsl(119, color, 0.5).rgb(),
+          c = "rgba(" + z.r + "," + z.g + "," + z.b + ",",
+              x = x0 += (x1 - x0) * .1,
+              y = y0 += (y1 - y0) * .1;
+
+            d3.select({}).transition()
+            .duration(duration)
+            .ease(Math.sqrt)
+            .tween("circle", function() {
+                return function(t) {
+                    context.strokeStyle = c + 1 + ")";
+                    context.beginPath();
+                    context.arc(x, y, r * t, 0, 1*pieAngle);
+                    context.stroke();
+                };
+            });
+            return true;
+          });
+    }
+            },interval);
+
+        // KV
+        setInterval(function(){
+            if(!isPaused){
+        d3.timer(function() {
+            var color = parseFloat(KV[i]["Volume"]) || 0;
+            console.log("KV:" + color);
+          var z = d3.hsl(359, color, 0.5).rgb(),
+          c = "rgba(" + z.r + "," + z.g + "," + z.b + ",",
+              x = x0 += (x1 - x0) * .1,
+              y = y0 += (y1 - y0) * .1;
+
+            d3.select({}).transition()
+            .duration(duration)
+            .ease(Math.sqrt)
+            .tween("circle", function() {
+                return function(t) {
+                    context.strokeStyle = c + 1 + ")";
+                    context.beginPath();
+                    context.arc(x, y, r * t, 1*pieAngle, 2*pieAngle);
+                    context.stroke();
+                };
+            });
+            return true;
+          });
+    }
+            },interval);
+
+        // VV
+        setInterval(function(){
+            if(!isPaused){
+        d3.timer(function() {
+            var color = parseFloat(VV[i]["Volume"]) || 0;
+            console.log("VV:" + color);
+          var z = d3.hsl(239, color, 0.5).rgb(),
+          c = "rgba(" + z.r + "," + z.g + "," + z.b + ",",
+              x = x0 += (x1 - x0) * .1,
+              y = y0 += (y1 - y0) * .1;
+
+            d3.select({}).transition()
+            .duration(duration)
+            .ease(Math.sqrt)
+            .tween("circle", function() {
+                return function(t) {
+                    context.strokeStyle = c + 1 + ")";
+                    context.beginPath();
+                    context.arc(x, y, r * t, 2*pieAngle, 3*pieAngle);
+                    context.stroke();
+                };
+            });
+            return true;
+          });
+    }
+            },interval);
+
+        function move() {
+          // var mouse = d3.mouse(this);
+          // x1 = mouse[0];
+          // y1 = mouse[1];
+          // d3.event.preventDefault();
+      }
+    </script>
+    </div>
+        <div class="col-sm-4">
+            <p> <spam id="EL">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</spam> Energy</p>
+            <p><spam id="KV">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</spam> Cold Water</p>
+            <p><spam id="VV">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</spam> Warm Water</p>
+            <p><spam id="BL">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</spam> No Activity</p>
+        </div>
+        <h1 class="col-sm-8 pull-right" id="date">
+        </h1>
+        <a href="about.html">about</a>
+    </div>
+</body>
+<script type="text/javascript">
+    $("#rate").on('change', function(){
+        isPaused = true;
+        rate = $(this).val();
+        context.clearRect(0, 0, width, height);
+        context.clearRect(0, 0, width, height);
+        context.clearRect(0, 0, width, height);
+        loadFiles(apartment, rate);
+    });
+    $("#ap").on('change', function(){
+        isPaused = true;
+        apartment = $(this).val();
+        context.clearRect(0, 0, width, height);
+        loadFiles(apartment, rate);
+    })
+</script>
+</html>

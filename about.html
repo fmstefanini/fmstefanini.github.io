@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+        <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+        <script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
+        <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+        <style>
+          body {
+            margin: 0;
+            background: #111;
+            color: #fff;
+            min-width: 960px;
+            font-size: 2em;
+          }
+        </style>
+    </head>
+    <body>
+        <div class="container" id="report">
+            <div class="row">
+                <h1>Creating a comsumption visualization</h1>
+                <h2>How to read the mapping:</h2>
+                <ul>
+                    <li>Each third of the circle maps one of the three variables (Hot Water, Cold Water, Energy)</li>
+                    <li>The circle maps up to the four last days/hours to enable comparison</li>
+                    <li>The inner-most circle is the most recent day, and the outer ones are the farther past days</li>
+                    <li>The saturation of the color tells how much of that good was used in the period of time</li>
+                    <li>If one of the quadrants is white, it means no activity was recorded for that given period</li>
+                </ul>
+                <h2>Technologies used:</h2>
+                <ul>
+                    <li>D3.js</li>
+                    <li>jQuery</li>
+                    <li>HTML Canvas</li>
+                </ul>
+            </div>
+    </body>
+</html>
